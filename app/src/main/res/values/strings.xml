@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">FingerPrint2</string>
+    <string name="fetch_and_send">fetch and send</string>
+</resources>
