@@ -6,6 +6,7 @@ import android.util.Base64;
 import android.util.Xml;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -271,6 +272,7 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 //    fetch and send when invoking the function
     public void sign(){
+        Toast.makeText(this,"sign",Toast.LENGTH_LONG).show();
         Thread thread1 = new Thread(mutiThread1);
         thread1.start();
         try {
