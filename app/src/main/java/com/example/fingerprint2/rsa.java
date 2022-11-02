@@ -26,11 +26,11 @@ public class rsa {
     private static final String PUBLIC_KEY = "RSAPublicKey";
     private static final String PRIVATE_KEY = "RSAPrivateKey";
 
-    public static byte[] decryptBASE64(String key) throws Exception {
+    public static byte[] decryptBASE64(String key) {
         return Base64.decode(key, Base64.DEFAULT);
     }
 
-    public static String encryptBASE64(byte[] key) throws Exception {
+    public static String encryptBASE64(byte[] key) {
         return Base64.encodeToString(key, Base64.DEFAULT);
     }
 

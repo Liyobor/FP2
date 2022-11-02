@@ -172,7 +172,6 @@ public class LoginActivity extends AppCompatActivity {
 
         }).start();
 
-
     }
     final Handler hand1 = new Handler()
     {

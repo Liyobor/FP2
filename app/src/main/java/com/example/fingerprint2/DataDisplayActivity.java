@@ -1,5 +1,6 @@
 package com.example.fingerprint2;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Base64;
@@ -17,8 +18,6 @@ import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,6 +37,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import timber.log.Timber;
+
 
 public class DataDisplayActivity extends AppCompatActivity {
 
@@ -66,7 +66,7 @@ public class DataDisplayActivity extends AppCompatActivity {
     private String aesKey;
     private String iv;
 
-    private final String path = "/data"+"/data/com.example.myapplication/files/";
+    private String path = "/data"+"/data/com.example.myapplication/files/";
 
     private int caseOID;
     private int account;
@@ -249,7 +249,11 @@ public class DataDisplayActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         caseOID = bundle.getInt("caseOID",-1);
+        Timber.i("caseOID in dataDisplay = %s",caseOID);
         account = bundle.getInt("account",-1);
+        Timber.i("account in dataDisplay = %s",account);
+        path = bundle.getString("privateKeyPath","error");
+        Timber.i("path = %s",path);
 
 //        set fab onclick action
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -258,6 +262,7 @@ public class DataDisplayActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 data = ConnectionManager.Get_HttpURLConnection();
+
                 parseXml(data);
                 runOnUiThread(this::displayRecord);
             } catch (IOException e) {
@@ -280,8 +285,8 @@ public class DataDisplayActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Thread thread2 = new Thread(mutiThread2);
-        thread2.start();
+//        Thread thread2 = new Thread(mutiThread2);
+//        thread2.start();
     }
 
     //接收來自伺服器的資料
@@ -297,22 +302,29 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 
     //convert File type to String type
-    private String FileToString(File file) throws IOException {
-        InputStream stream = new FileInputStream(file);
+    private String StreamToString(InputStream keyStream) throws IOException {
+        Timber.i("FileInputStream");
+//        Timber.i("stream = %s", keyStream);
         int bufferSize = 1024;
         char[] buffer = new char[bufferSize];
         StringBuilder out = new StringBuilder();
-        Reader in = new InputStreamReader(stream);
+        Reader in = new InputStreamReader(keyStream);
         for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0; ) {
             out.append(buffer, 0, numRead);
         }
+//        Timber.i("out.toString() = %s",out.toString());
         return out.toString();
     }
 
 
+
+
+
+
     //使用私鑰解密
-    private String privateKeyEncrypt(String Data, File key) throws Exception {
-        String stringBefore=FileToString(key);
+    private String privateKeyEncrypt(String Data, InputStream keyStream) throws Exception {
+        String stringBefore= StreamToString(keyStream);
+//        String stringBefore=FileToString(key);
         String Key = stringBefore
                 .replaceAll("\\n", "")
                 .replaceAll("-----BEGIN PRIVATE KEY-----", "")
@@ -338,21 +350,39 @@ public class DataDisplayActivity extends AppCompatActivity {
     }
 
     //使用私鑰解密
-    private String privateKeyDecrypt(String encData, File key) throws Exception {
-        String stringBefore=FileToString(key);
-        String Key = stringBefore
-                .replaceAll("\\n", "")
-                .replaceAll("-----BEGIN PRIVATE KEY-----", "")
-                .replaceAll("-----END PRIVATE KEY-----", "")
-                .trim();
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        PKCS8EncodedKeySpec keySpecX509 = new PKCS8EncodedKeySpec(rsa.decryptBASE64(Key));
-        RSAPrivateKey privatekey = (RSAPrivateKey) kf.generatePrivate(keySpecX509);
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, privatekey);
-        byte[] decData= cipher.doFinal(rsa.decryptBASE64(encData));
+    private String privateKeyDecrypt(String encData, String stringBefore) {
 
-        return new String(decData);
+//        String stringBefore= StreamToString(keyStream);
+//        Timber.i("encData = %s",encData);
+
+        try{
+            String Key = stringBefore
+                    .replaceAll("\\n", "")
+                    .replaceAll("-----BEGIN PRIVATE KEY-----", "")
+                    .replaceAll("-----END PRIVATE KEY-----", "")
+                    .trim();
+            Timber.i("Key = %s",Key);
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec keySpecX509 = new PKCS8EncodedKeySpec(rsa.decryptBASE64(Key));
+//            Timber.i("Key = %s", new String(rsa.decryptBASE64(Key), StandardCharsets.ISO_8859_1));
+            RSAPrivateKey privatekey = (RSAPrivateKey) kf.generatePrivate(keySpecX509);
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.DECRYPT_MODE, privatekey);
+
+//            Timber.i("bytes = %s", new String(rsa.decryptBASE64(encData), StandardCharsets.ISO_8859_1));
+
+            Timber.i("bytes = %s", new String(java.util.Base64.getDecoder().decode(encData)));
+//            rsa.decryptBASE64()
+//            Timber.i("bytes = %s", new String(Base64.decode(encData,Base64.NO_PADDING), StandardCharsets.UTF_8));
+            byte[] decData= cipher.doFinal(rsa.decryptBASE64(encData));
+//            byte[] decData= cipher.doFinal(encData.getBytes());
+
+            return new String(decData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+
     }
 
 
@@ -367,6 +397,8 @@ public class DataDisplayActivity extends AppCompatActivity {
         byte[] original = cipher.doFinal(encrypted1);
         return new String(original);
     }
+
+
 
 
     private final Runnable mutiThread2 = new Runnable() {
@@ -388,12 +420,14 @@ public class DataDisplayActivity extends AppCompatActivity {
                 String one="1";                                                     //放入簽章結果 1:成功 其他值:失敗
                 String documentOID=Integer.toString(caseOID);                       //病例的OID caseOID row in file_info on database
                 String userAccount=Integer.toString(account);                       //使用者帳號 account row in account_info on database
-                File file = new File(path, "private.key");
+//                File file = new File(path, "private.key");
+
+                InputStream fileStream = getContentResolver().openInputStream(Uri.parse(path));
 
 
 
-                String result=privateKeyEncrypt(one, file);                         //加密簽章結果
-                String OID=privateKeyEncrypt(documentOID, file);                    //加密病例的OID
+                String result=privateKeyEncrypt(one, fileStream);                         //加密簽章結果
+                String OID=privateKeyEncrypt(documentOID, fileStream);                    //加密病例的OID
                 JSONArray Package = packageResult(result, userAccount, OID);        //封裝回傳的三個資料
 
                 try(OutputStream os = con.getOutputStream()) {                      //傳輸
@@ -424,6 +458,13 @@ public class DataDisplayActivity extends AppCompatActivity {
     };
 
 
+    private static String base64decode(String string) {
+        byte[] bytes = java.util.Base64.getDecoder().decode(string);
+        return new String(bytes,StandardCharsets.UTF_8);
+    }
+
+
+
 
     private final Runnable mutiThread1 = new Runnable() {                                 //這個執行緒負責抓取接收json跟解密
         @Override
@@ -439,8 +480,10 @@ public class DataDisplayActivity extends AppCompatActivity {
                 con.connect();
 
                 JSONArray documentOID = new JSONArray();
-                documentOID.put(Integer.toString(account));                        //放入使用者帳號 account row in account_info on database
-                documentOID.put(Integer.toString(caseOID));                        //放入資料庫裡caseOID的值 以抓取對應的病例
+                Timber.i("account = %s",account);
+                Timber.i("caseOID = %s",caseOID);
+                documentOID.put(account);                        //放入使用者帳號 account row in account_info on database
+                documentOID.put(caseOID);                        //放入資料庫裡caseOID的值 以抓取對應的病例
 
                 try(OutputStream os = con.getOutputStream()) {                     //傳輸
                     byte[] input = documentOID.toString().getBytes();
@@ -464,24 +507,83 @@ public class DataDisplayActivity extends AppCompatActivity {
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {            //抓取來自php的json檔案
                     InputStream inputStream = con.getInputStream();
+//                    Timber.i("inputStream = %s",inputStream);
+
+
+
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8), 8);
                     String line;
-                    while ((line = bufferedReader.readLine()) != null) {    //解析json內容
+//                    Timber.i("line = %s",bufferedReader.readLine());
+                    line = bufferedReader.readLine();
+//                    while (line != null) {    //解析json內容
                         JSONArray dataJson = new JSONArray(line);
                         int i = dataJson.length() - 1;
                         JsonInfo = dataJson.getJSONObject(i);
-                        mrData = JsonInfo.getString("aes_encrypt_mrData");
-                        aesKey = JsonInfo.getString("rsa_encrypt_aesKey");
-                        iv = JsonInfo.getString("rsa_encrypt_iv");
-                        result1 = mrData;
-                        result2 = aesKey;
-                        result3 = iv;
-                    }
-                    File file = new File(path, "private.key");
 
-                    aesKey = privateKeyDecrypt(aesKey, file);           //解密對稱金鑰
-                    iv = privateKeyDecrypt(iv, file);                   //解密iv
+
+//                        Timber.i("JsonInfo = %s",JsonInfo);
+
+
+                    String signature = base64decode(JsonInfo.getString("signature"));
+                    mrData = JsonInfo.getString("aes_encrypt_mrData");
+
+
+                    aesKey = JsonInfo.getString("rsa_encrypt_aesKey");
+
+                    iv = JsonInfo.getString("rsa_encrypt_iv");
+                    result1 = mrData;
+                    result2 = aesKey;
+                    result3 = iv;
+
+
+
+
+
+//                    Timber.i("signature = %s",signature);
+//                        Timber.i("result1 = %s",result1);
+//                        Timber.i("result2 = %s",result2);
+//                        Timber.i("result3 = %s",result3);
+
+
+//                    }
+
+//                    path =  "/data"+"/data/com.android.externalstorage.documents/document/1511-181D%3A10666_private.key";
+//                    private String path = "/data"+"/data/com.example.myapplication/files/";
+                    Timber.i("result1 length = %s",result1.length());
+                    Timber.i("result1 = %s",base64decode(result1));
+//                    byte[] decodeResult = java.util.Base64.getDecoder().decode(result1);
+                    Timber.i("path = %s",path);
+
+
+
+                    InputStream fileStream = getContentResolver().openInputStream(Uri.parse(path));
+                    String stringBefore= StreamToString(fileStream);
+//                    Timber.i("stringBefore = %s",stringBefore);
+
+
+
+
+//                    Timber.i("result = %s",result);
+//                    File file = new File(path);
+
+
+
+
+//                    Timber.i("new File = %s",file);
+//                    Timber.i("canRead = %s",file.canRead());
+
+
+
+//                    Timber.i()
+
+                    aesKey = privateKeyDecrypt(aesKey, stringBefore);           //解密對稱金鑰
+                    iv = privateKeyDecrypt(iv, stringBefore);                   //解密iv
                     result1 = aes_decrypt(result1, aesKey, iv);         //對稱解密病例
+
+                    Timber.i("result1 = %s",result1);
+
+
+
                     inputStream.close();
                 }
             } catch (Exception e) {

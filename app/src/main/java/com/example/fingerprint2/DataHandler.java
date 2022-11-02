@@ -7,6 +7,8 @@ public class DataHandler {
     int caseOID;
     int account;
 
+    ArrayList<Integer> caseOIDList = new ArrayList<>();
+    ArrayList<Integer> accountList = new ArrayList<>();
     void resetData(){
         info.clear();
         caseOID = -1;

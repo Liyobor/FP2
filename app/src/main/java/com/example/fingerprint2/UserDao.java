@@ -8,7 +8,8 @@ import java.sql.SQLException;
 public class UserDao {
     public boolean login(String username, String password) {
 
-        String sql = "select * from ra.member where account = ? and password = ?";
+//        String sql = "select * from ra.member where account = ? and password = ?";
+        String sql = "select * from app.account_info where account = ? and password = ?";
 
         Connection con = JDBCUtils.getConn();
 
@@ -34,21 +35,28 @@ public class UserDao {
     }
     public boolean register(User user){
 
-        String sql = "insert into ra.member (account,Password,identity,level,UID) VALUES (?,?,?,?,?)";
+//        String sqlInjectRa = "insert into ra.member (account,Password,identity,level,UID) VALUES (?,?,?,?,?)";
+        String sqlInjectAccountInfo = "insert into app.account_info (account,password,hospital,doctor,publicKey) VALUES (?,?,?,?,?)";
 
 
 
         Connection  con = JDBCUtils.getConn();
-        int UID =100000001;
+//        int UID =100000001;
+        String hospital = "fju";
+        String doctor = "a";
+        String publicKey = "C:\\Program Files\\Ampps\\www\\publicKey\\public.key";
 
         try {
-            PreparedStatement pst= con.prepareStatement(sql);
+            PreparedStatement pst= con.prepareStatement(sqlInjectAccountInfo);
 
             pst.setString(1,user.getUsername());
             pst.setString(2,user.getPassword());
-            pst.setString(3,"tester");
-            pst.setInt(4,2);
-            pst.setInt(5,UID);
+            pst.setString(3,hospital);
+            pst.setString(4,doctor);
+            pst.setString(5,publicKey);
+//            pst.setString(3,"tester");
+//            pst.setInt(4,2);
+//            pst.setInt(5,UID);
 //            pst.setString(3,"tester");
 //            pst.setInt(4,2);
 //            pst.setInt(5,UID);

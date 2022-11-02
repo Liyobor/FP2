@@ -14,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import timber.log.Timber;
+
 public class ConnectionManager extends Thread{
 
 
@@ -46,17 +48,23 @@ public class ConnectionManager extends Thread{
                 String caseOID;
                 String filePath;
                 String account;
-                int index = 0;
 
                 caseOID = String.format("%s",rs.getString("caseOID"));
                 account = String.format("%s",rs.getString("account"));
                 filePath = String.format("%s",rs.getString("filePath"));
                 String fileName = filePath.substring(filePath.indexOf("file")+5,filePath.length()-4);
 
-
-                dataHandler.info.add(index,(fileName));
+                dataHandler.info.add((fileName));
                 dataHandler.caseOID = Integer.parseInt(caseOID);
                 dataHandler.account = Integer.parseInt(account);
+                dataHandler.caseOIDList.add(dataHandler.caseOID);
+                dataHandler.accountList.add(dataHandler.account);
+
+                Timber.i("dataHandler changed!");
+                Timber.i("dataHandler.info = %s",fileName);
+                Timber.i("dataHandler.caseOID = %s",dataHandler.caseOID);
+                Timber.i("dataHandler.account = %s",dataHandler.account);
+
 
 
 
