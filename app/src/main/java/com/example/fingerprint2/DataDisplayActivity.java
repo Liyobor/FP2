@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -255,21 +256,26 @@ public class DataDisplayActivity extends AppCompatActivity {
         path = bundle.getString("privateKeyPath","error");
         Timber.i("path = %s",path);
 
+        Thread thread1 = new Thread(mutiThread1);
+        thread1.start();
+        try {
+            thread1.join(8000);
+
+            new Thread(() -> {
+                parseXml(data);
+                runOnUiThread(this::displayRecord);
+            }
+            ).start();
+
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 //        set fab onclick action
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(v -> sign());
 
-        new Thread(() -> {
-            try {
-                data = ConnectionManager.Get_HttpURLConnection();
 
-                parseXml(data);
-                runOnUiThread(this::displayRecord);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        ).start();
 
     }
 
@@ -467,6 +473,7 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 
     private final Runnable mutiThread1 = new Runnable() {                                 //這個執行緒負責抓取接收json跟解密
+
         @Override
         public void run() {
             Looper.prepare();
@@ -549,10 +556,10 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 //                    path =  "/data"+"/data/com.android.externalstorage.documents/document/1511-181D%3A10666_private.key";
 //                    private String path = "/data"+"/data/com.example.myapplication/files/";
-                    Timber.i("result1 length = %s",result1.length());
-                    Timber.i("result1 = %s",base64decode(result1));
+//                    Timber.i("result1 length = %s",result1.length());
+//                    Timber.i("result1 = %s",base64decode(result1));
 //                    byte[] decodeResult = java.util.Base64.getDecoder().decode(result1);
-                    Timber.i("path = %s",path);
+//                    Timber.i("path = %s",path);
 
 
 
@@ -581,6 +588,14 @@ public class DataDisplayActivity extends AppCompatActivity {
                     result1 = aes_decrypt(result1, aesKey, iv);         //對稱解密病例
 
                     Timber.i("result1 = %s",result1);
+                    InputStream targetStream = new ByteArrayInputStream(result1.getBytes());
+
+                    data = targetStream;
+
+
+
+
+
 
 
 
