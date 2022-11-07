@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/FP2/app/src/main/res/layout/activity_login.xml" value="0.36614583333333334" />
+        <entry key="..\:/Users/Ray/AppData/Local/Android/Sdk/platforms/android-32/data/res/layout/simple_list_item_1.xml" value="0.19947916666666668" />
         <entry key="..\:/Users/Ray/Desktop/project/220904/FingerPrint2/app/src/main/res/layout/activity_create.xml" value="0.1203125" />
         <entry key="..\:/Users/Ray/Desktop/project/220904/FingerPrint2/app/src/main/res/layout/activity_data_decrypt.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/Ray/Desktop/project/220904/FingerPrint2/app/src/main/res/layout/activity_data_display.xml" value="0.19739583333333333" />
@@ -14,6 +15,7 @@
         <entry key="..\:/Users/Ray/Desktop/project/finished/220904/FingerPrint2/app/src/main/res/layout/activity_data_display.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/Ray/Desktop/project/finished/220904/FingerPrint2/app/src/main/res/layout/activity_login.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/Ray/Desktop/project/finished/220904/FingerPrint2/app/src/main/res/layout/activity_select.xml" value="0.19739583333333333" />
+        <entry key="..\:/Users/Ray/Desktop/project/finished/220904/FingerPrint2/app/src/main/res/layout/row.xml" value="0.2" />
         <entry key="..\:/Users/Ray/Desktop/project/login/FingerPrint2/app/src/main/res/layout/activity_create.xml" value="0.20104166666666667" />
         <entry key="..\:/Users/Ray/Desktop/project/login/FingerPrint2/app/src/main/res/layout/activity_data_decrypt.xml" value="0.5" />
         <entry key="..\:/Users/Ray/Desktop/project/login/FingerPrint2/app/src/main/res/layout/activity_data_display.xml" value="0.371875" />

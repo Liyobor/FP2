@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+
+
+    <TextView
+        android:id="@+id/caseNum"
+        android:layout_width="55sp"
+        android:layout_height="50sp"
+        android:textSize="16sp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="10sp"/>
+
+    <TextView
+        android:id="@+id/patient"
+        android:layout_width="120sp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10sp"
+        android:layout_gravity="start|center_vertical"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/birthday"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10sp"
+        android:layout_gravity="start|center_vertical"
+        android:textSize="16sp" />
+
+</LinearLayout>

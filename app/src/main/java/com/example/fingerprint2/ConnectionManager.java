@@ -48,10 +48,16 @@ public class ConnectionManager extends Thread{
                 String caseOID;
                 String filePath;
                 String account;
+                String patient;
+                String birthday;
 
                 caseOID = String.format("%s",rs.getString("caseOID"));
                 account = String.format("%s",rs.getString("account"));
                 filePath = String.format("%s",rs.getString("filePath"));
+                patient = String.format("姓名:%-16s",rs.getString("patient"));
+                birthday = String.format("生日:%-16s",rs.getString("birthday"));
+
+                String displayCaseStr = String.format("病歷%-8o",dataHandler.dataSelectDisplayList.size());
                 String fileName = filePath.substring(filePath.indexOf("file")+5,filePath.length()-4);
 
                 dataHandler.info.add((fileName));
@@ -60,6 +66,15 @@ public class ConnectionManager extends Thread{
                 dataHandler.caseOIDList.add(dataHandler.caseOID);
                 dataHandler.accountList.add(dataHandler.account);
 
+
+//                String displayString = String.format("病歷:"+dataHandler.displayList.size()+","+tab+"姓名 : "+patient,","+tab);
+
+
+
+                String displayString = String.format("%s%s%s",displayCaseStr,patient,birthday);
+//                String displayString = "病歷"+dataHandler.displayList.size()+",姓名:"+patient+",生日:"+birthday;
+                Timber.i("%s%s%s",displayCaseStr,patient,birthday);
+                dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday));
                 Timber.i("dataHandler changed!");
                 Timber.i("dataHandler.info = %s",fileName);
                 Timber.i("dataHandler.caseOID = %s",dataHandler.caseOID);

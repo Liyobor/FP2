@@ -60,6 +60,7 @@ public class DataDisplayActivity extends AppCompatActivity {
     private String result3;
     private String result4;
     private String PrivateKeyPath;
+    private String errorMsg;
 
     private JSONObject JsonInfo;
     private String cert;
@@ -73,10 +74,19 @@ public class DataDisplayActivity extends AppCompatActivity {
     private int account;
 
     private void displayRecord(){
-        info.add(11,"病情摘要");
-        ListView listViewData = findViewById(R.id.listViewData);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, info);
-        listViewData.setAdapter(adapter);
+        if(info.isEmpty()){
+            info.add("解密失敗!");
+            info.add(String.format("錯誤訊息: %s",errorMsg));
+            ListView listViewData = findViewById(R.id.listViewData);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, info);
+            listViewData.setAdapter(adapter);
+        }else{
+            info.add(11,"病情摘要");
+            ListView listViewData = findViewById(R.id.listViewData);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, info);
+            listViewData.setAdapter(adapter);
+        }
+
     }
 
     private void parseXml(InputStream raw){
@@ -240,6 +250,8 @@ public class DataDisplayActivity extends AppCompatActivity {
 
             data.close();
         } catch(Exception e){
+            info.clear();
+            errorMsg = e.toString();
             e.printStackTrace();
         }
     }
@@ -263,6 +275,7 @@ public class DataDisplayActivity extends AppCompatActivity {
 
             new Thread(() -> {
                 parseXml(data);
+
                 runOnUiThread(this::displayRecord);
             }
             ).start();
@@ -283,11 +296,11 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 //    fetch and send when invoking the function
     public void sign(){
-        Toast.makeText(this,"sign",Toast.LENGTH_LONG).show();
-        Thread thread1 = new Thread(mutiThread1);
-        thread1.start();
+
+        Thread thread2 = new Thread(mutiThread2);
+        thread2.start();
         try {
-            thread1.join(8000);
+            thread2.join(8000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -308,18 +321,26 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 
     //convert File type to String type
-    private String StreamToString(InputStream keyStream) throws IOException {
+    private String StreamToString(InputStream keyStream) {
         Timber.i("FileInputStream");
 //        Timber.i("stream = %s", keyStream);
-        int bufferSize = 1024;
-        char[] buffer = new char[bufferSize];
-        StringBuilder out = new StringBuilder();
-        Reader in = new InputStreamReader(keyStream);
-        for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0; ) {
-            out.append(buffer, 0, numRead);
+        try{
+            int bufferSize = 1024;
+            char[] buffer = new char[bufferSize];
+            StringBuilder out = new StringBuilder();
+            Reader in = new InputStreamReader(keyStream);
+            for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0; ) {
+                out.append(buffer, 0, numRead);
+
+            }
+            return out.toString();
+        }catch (IOException e){
+            e.printStackTrace();
         }
+        return "";
+
 //        Timber.i("out.toString() = %s",out.toString());
-        return out.toString();
+
     }
 
 
@@ -328,22 +349,29 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 
     //使用私鑰解密
-    private String privateKeyEncrypt(String Data, InputStream keyStream) throws Exception {
-        String stringBefore= StreamToString(keyStream);
-//        String stringBefore=FileToString(key);
-        String Key = stringBefore
-                .replaceAll("\\n", "")
-                .replaceAll("-----BEGIN PRIVATE KEY-----", "")
-                .replaceAll("-----END PRIVATE KEY-----", "")
-                .trim();
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        PKCS8EncodedKeySpec keySpecX509 = new PKCS8EncodedKeySpec(rsa.decryptBASE64(Key));
-        RSAPrivateKey privatekey = (RSAPrivateKey) kf.generatePrivate(keySpecX509);
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, privatekey);
+    private String privateKeyEncrypt(String Data, String stringBefore)  {
+        try{
 
-        byte[] EncData= cipher.doFinal(Data.getBytes(StandardCharsets.UTF_8));
-        return rsa.encryptBASE64(EncData);
+
+//        String stringBefore=FileToString(key);
+            String Key = stringBefore
+                    .replaceAll("\\n", "")
+                    .replaceAll("-----BEGIN PRIVATE KEY-----", "")
+                    .replaceAll("-----END PRIVATE KEY-----", "")
+                    .trim();
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec keySpecX509 = new PKCS8EncodedKeySpec(rsa.decryptBASE64(Key));
+            RSAPrivateKey privatekey = (RSAPrivateKey) kf.generatePrivate(keySpecX509);
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, privatekey);
+
+            byte[] EncData= cipher.doFinal(Data.getBytes(StandardCharsets.UTF_8));
+            return rsa.encryptBASE64(EncData);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+
     }
 
     //創建json的格式並封裝內容
@@ -429,11 +457,11 @@ public class DataDisplayActivity extends AppCompatActivity {
 //                File file = new File(path, "private.key");
 
                 InputStream fileStream = getContentResolver().openInputStream(Uri.parse(path));
+                String stringBefore= StreamToString(fileStream);
 
 
-
-                String result=privateKeyEncrypt(one, fileStream);                         //加密簽章結果
-                String OID=privateKeyEncrypt(documentOID, fileStream);                    //加密病例的OID
+                String result=privateKeyEncrypt(one, stringBefore);                         //加密簽章結果
+                String OID=privateKeyEncrypt(documentOID, stringBefore);                    //加密病例的OID
                 JSONArray Package = packageResult(result, userAccount, OID);        //封裝回傳的三個資料
 
                 try(OutputStream os = con.getOutputStream()) {                      //傳輸
@@ -448,6 +476,8 @@ public class DataDisplayActivity extends AppCompatActivity {
                     String responseLine;
                     while ((responseLine = br.readLine()) != null) {
                         response.append(responseLine.trim());
+                        Timber.i("response = %s",response);
+                        runOnUiThread(() -> Toast.makeText(DataDisplayActivity.this,response,Toast.LENGTH_LONG).show());
                     }
 //                    text2.setText(response);
                 }catch (Exception e) {
@@ -457,9 +487,7 @@ public class DataDisplayActivity extends AppCompatActivity {
 //                text2.setText(e.toString());
             }
 
-            runOnUiThread(() -> {
 
-            });
         }
     };
 
@@ -531,7 +559,7 @@ public class DataDisplayActivity extends AppCompatActivity {
 //                        Timber.i("JsonInfo = %s",JsonInfo);
 
 
-                    String signature = base64decode(JsonInfo.getString("signature"));
+//                    String signature = base64decode(JsonInfo.getString("signature"));
                     mrData = JsonInfo.getString("aes_encrypt_mrData");
 
 
@@ -542,24 +570,6 @@ public class DataDisplayActivity extends AppCompatActivity {
                     result2 = aesKey;
                     result3 = iv;
 
-
-
-
-
-//                    Timber.i("signature = %s",signature);
-//                        Timber.i("result1 = %s",result1);
-//                        Timber.i("result2 = %s",result2);
-//                        Timber.i("result3 = %s",result3);
-
-
-//                    }
-
-//                    path =  "/data"+"/data/com.android.externalstorage.documents/document/1511-181D%3A10666_private.key";
-//                    private String path = "/data"+"/data/com.example.myapplication/files/";
-//                    Timber.i("result1 length = %s",result1.length());
-//                    Timber.i("result1 = %s",base64decode(result1));
-//                    byte[] decodeResult = java.util.Base64.getDecoder().decode(result1);
-//                    Timber.i("path = %s",path);
 
 
 

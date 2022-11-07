@@ -9,9 +9,19 @@ public class DataHandler {
 
     ArrayList<Integer> caseOIDList = new ArrayList<>();
     ArrayList<Integer> accountList = new ArrayList<>();
+
+
+//    ArrayList<String> displayList = new ArrayList<>();
+
+    ArrayList<DataItem> dataSelectDisplayList = new ArrayList<>();
+
+
+
     void resetData(){
         info.clear();
         caseOID = -1;
         account = -1;
     }
 }
+
+

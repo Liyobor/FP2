@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,8 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.BuildConfig;
-
-import java.util.ArrayList;
 
 import timber.log.Timber;
 
@@ -77,8 +74,10 @@ public class SelectActivity extends AppCompatActivity {
 
         Thread pullRecord = new Thread(() ->{
             ConnectionManager.pullRecord(dataHandler);
-            ArrayList<String> info = dataHandler.info;
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, info);
+            CustomAdapter adapter = new CustomAdapter(this,R.layout.row, dataHandler.dataSelectDisplayList);
+//            ArrayList<String> info = dataHandler.info;
+
+//            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, info);
             runOnUiThread(() -> listViewRecordsList.setAdapter(adapter));
 
         });
