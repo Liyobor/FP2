@@ -25,12 +25,7 @@ import java.util.concurrent.Executor;
 
 import timber.log.Timber;
 
-class GlobalInformation {
-    public static String account;
-    public static Integer caseOID;
-    public static String privateKeyPath;
-    public static Toast toast;
-}
+
 
 public class LoginActivity extends AppCompatActivity {
 
