@@ -1,6 +1,7 @@
 package com.example.fingerprint2;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ public class CustomAdapter extends ArrayAdapter<DataItem> {
         View v = convertView;
         if (v == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.row, null);
+            v = inflater.inflate(R.layout.row_listvew_decrypt, null);
         }
 
 
@@ -36,12 +37,29 @@ public class CustomAdapter extends ArrayAdapter<DataItem> {
 
             if (caseNumView != null){
                 caseNumView.setText(i.getCaseNum());
+                if(i.canDecrypt()){
+//                    caseNumView.setTextColor(Color.BLACK);
+                }else{
+                    caseNumView.setTextColor(Color.GRAY);
+                }
+
             }
             if (patientView != null){
                 patientView.setText(i.getPatient());
+
+                if(i.canDecrypt()){
+//                    patientView.setTextColor(Color.BLACK);
+                }else{
+                    patientView.setTextColor(Color.GRAY);
+                }
             }
             if (birthdayView != null){
                 birthdayView.setText(i.getBirthday());
+                if(i.canDecrypt()){
+//                    birthdayView.setTextColor(Color.BLACK);
+                }else{
+                    birthdayView.setTextColor(Color.GRAY);
+                }
             }
 
         }

@@ -5,18 +5,25 @@ public class DataItem {
     private String patient;
     private String birthday;
 
+    private boolean canDecrypt;
+
     public DataItem() {
 
     }
 
-    public DataItem(String caseNum, String patient, String birthday) {
+    public DataItem(String caseNum, String patient, String birthday,boolean canDecrypt) {
         this.caseNum = caseNum;
         this.patient = patient;
         this.birthday = birthday;
+        this.canDecrypt = canDecrypt;
     }
 
     public String getCaseNum() {
         return caseNum;
+    }
+
+    public boolean canDecrypt(){
+        return canDecrypt;
     }
 
     public void setCaseNum(String name) {

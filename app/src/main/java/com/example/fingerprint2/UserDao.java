@@ -20,7 +20,7 @@ public class UserDao {
             pst.setString(2, password);
 
             if (pst.executeQuery().next()) {
-
+                GlobalInformation.account = username;
                 return true;
 
             }
@@ -97,8 +97,8 @@ public class UserDao {
                 user = new User(usernamedb,password);
             }
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }finally {
             JDBCUtils.close(con);
         }

@@ -21,6 +21,8 @@ public class SelectActivity extends AppCompatActivity {
 
     private Integer selectIndex;
 
+
+
     private void selectActivityForResult(){
         Intent picker = new Intent(Intent.ACTION_GET_CONTENT);
         picker.setType("*/*");
@@ -45,6 +47,11 @@ public class SelectActivity extends AppCompatActivity {
                         bundle.putInt("caseOID",dataHandler.caseOIDList.get(selectIndex));
                         bundle.putString("account",dataHandler.accountList.get(selectIndex));
                         bundle.putString("privateKeyPath",result.getData().getDataString());
+
+                        GlobalInformation.caseOID = dataHandler.caseOIDList.get(selectIndex);
+                        GlobalInformation.account = dataHandler.accountList.get(selectIndex);
+                        GlobalInformation.privateKeyPath = result.getData().getDataString();
+
                         intent.putExtras(bundle);
                         this.startActivity(intent);
                     }
@@ -74,7 +81,7 @@ public class SelectActivity extends AppCompatActivity {
 
         Thread pullRecord = new Thread(() ->{
             ConnectionManager.pullRecord(dataHandler);
-            CustomAdapter adapter = new CustomAdapter(this,R.layout.row, dataHandler.dataSelectDisplayList);
+            CustomAdapter adapter = new CustomAdapter(this,R.layout.row_listvew_decrypt, dataHandler.dataSelectDisplayList);
 //            ArrayList<String> info = dataHandler.info;
 
 //            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, info);
@@ -107,8 +114,18 @@ public class SelectActivity extends AppCompatActivity {
 //                        bundle.putInt("caseOID",dataHandler.caseOIDList.get(arg2));
 //                        bundle.putInt("account",dataHandler.accountList.get(arg2));
 //                        intent.putExtras(bundle);
-
-                        selectActivityForResult();
+                        if(GlobalInformation.privateKeyPath==null) {
+                            selectActivityForResult();
+                        } else {
+                            Bundle bundle = new Bundle();
+                            Intent intent=new Intent();
+                            intent.setClass(SelectActivity.this,DataDisplayActivity.class);
+                            bundle.putInt("caseOID",GlobalInformation.caseOID);
+                            bundle.putString("account",GlobalInformation.account);
+                            bundle.putString("privateKeyPath",GlobalInformation.privateKeyPath);
+                            intent.putExtras(bundle);
+                            this.startActivity(intent);
+                        };
 
 
 

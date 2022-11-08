@@ -12,7 +12,6 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +25,16 @@ import java.util.concurrent.Executor;
 
 import timber.log.Timber;
 
+class GlobalInformation {
+    public static String account;
+    public static Integer caseOID;
+    public static String privateKeyPath;
+}
+
 public class LoginActivity extends AppCompatActivity {
 
-
     private static final int REQUEST_CODE = 101010;
-    ImageView imageViewLogin;
+//    ImageView imageViewLogin;
     private Executor executor;
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
@@ -45,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         Timber.uprootAll();
         if (BuildConfig.DEBUG) {
@@ -78,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         }));
 */
 
-        imageViewLogin=findViewById(R.id.imageView);
+//        imageViewLogin=findViewById(R.id.imageView);
 
         BiometricManager biometricManager = BiometricManager.from(this);
         switch (biometricManager.canAuthenticate(BIOMETRIC_STRONG | DEVICE_CREDENTIAL)) {
@@ -138,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
 
-        imageViewLogin.setOnClickListener(view -> biometricPrompt.authenticate(promptInfo));
+//        imageViewLogin.setOnClickListener(view -> biometricPrompt.authenticate(promptInfo));
     }
     public void reg(View view){
         startActivity(new Intent(getApplicationContext(),SelectActivity.class));

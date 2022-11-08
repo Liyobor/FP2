@@ -74,7 +74,14 @@ public class ConnectionManager extends Thread{
                 String displayString = String.format("%s%s%s",displayCaseStr,patient,birthday);
 //                String displayString = "病歷"+dataHandler.displayList.size()+",姓名:"+patient+",生日:"+birthday;
                 Timber.i("%s%s%s",displayCaseStr,patient,birthday);
-                dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday));
+
+
+                if(!GlobalInformation.account.equals(account)){
+                    dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,false));
+                }else{
+                    dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,true));
+                }
+
                 Timber.i("dataHandler changed!");
                 Timber.i("dataHandler.info = %s",fileName);
                 Timber.i("dataHandler.caseOID = %s",dataHandler.caseOID);
