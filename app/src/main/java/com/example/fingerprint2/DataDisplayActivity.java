@@ -71,7 +71,7 @@ public class DataDisplayActivity extends AppCompatActivity {
     private String path = "/data"+"/data/com.example.myapplication/files/";
 
     private int caseOID;
-    private int account;
+    private String account;
 
     private void displayRecord(){
         if(info.isEmpty()){
@@ -263,7 +263,7 @@ public class DataDisplayActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         caseOID = bundle.getInt("caseOID",-1);
         Timber.i("caseOID in dataDisplay = %s",caseOID);
-        account = bundle.getInt("account",-1);
+        account = bundle.getString("account","-1");
         Timber.i("account in dataDisplay = %s",account);
         path = bundle.getString("privateKeyPath","error");
         Timber.i("path = %s",path);
@@ -453,7 +453,7 @@ public class DataDisplayActivity extends AppCompatActivity {
 
                 String one="1";                                                     //放入簽章結果 1:成功 其他值:失敗
                 String documentOID=Integer.toString(caseOID);                       //病例的OID caseOID row in file_info on database
-                String userAccount=Integer.toString(account);                       //使用者帳號 account row in account_info on database
+                String userAccount=account;                       //使用者帳號 account row in account_info on database
 //                File file = new File(path, "private.key");
 
                 InputStream fileStream = getContentResolver().openInputStream(Uri.parse(path));

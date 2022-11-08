@@ -62,7 +62,7 @@ public class ConnectionManager extends Thread{
 
                 dataHandler.info.add((fileName));
                 dataHandler.caseOID = Integer.parseInt(caseOID);
-                dataHandler.account = Integer.parseInt(account);
+                dataHandler.account = account;
                 dataHandler.caseOIDList.add(dataHandler.caseOID);
                 dataHandler.accountList.add(dataHandler.account);
 

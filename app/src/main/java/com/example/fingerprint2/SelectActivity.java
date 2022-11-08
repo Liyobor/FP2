@@ -43,7 +43,7 @@ public class SelectActivity extends AppCompatActivity {
                         Intent intent=new Intent();
                         intent.setClass(SelectActivity.this,DataDisplayActivity.class);
                         bundle.putInt("caseOID",dataHandler.caseOIDList.get(selectIndex));
-                        bundle.putInt("account",dataHandler.accountList.get(selectIndex));
+                        bundle.putString("account",dataHandler.accountList.get(selectIndex));
                         bundle.putString("privateKeyPath",result.getData().getDataString());
                         intent.putExtras(bundle);
                         this.startActivity(intent);
