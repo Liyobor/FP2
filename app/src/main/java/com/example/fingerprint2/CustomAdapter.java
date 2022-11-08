@@ -31,14 +31,14 @@ public class CustomAdapter extends ArrayAdapter<DataItem> {
         DataItem i = objects.get(position);
 
         if (i != null) {
-            TextView caseNumView = (TextView) v.findViewById(R.id.caseNum);
-            TextView patientView = (TextView) v.findViewById(R.id.patient);
-            TextView birthdayView = (TextView) v.findViewById(R.id.birthday);
+            TextView caseNumView = v.findViewById(R.id.caseNum);
+            TextView patientView = v.findViewById(R.id.patient);
+            TextView birthdayView = v.findViewById(R.id.birthday);
 
             if (caseNumView != null){
                 caseNumView.setText(i.getCaseNum());
                 if(i.canDecrypt()){
-//                    caseNumView.setTextColor(Color.BLACK);
+                    caseNumView.setTextColor(Color.BLACK);
                 }else{
                     caseNumView.setTextColor(Color.GRAY);
                 }
@@ -48,7 +48,7 @@ public class CustomAdapter extends ArrayAdapter<DataItem> {
                 patientView.setText(i.getPatient());
 
                 if(i.canDecrypt()){
-//                    patientView.setTextColor(Color.BLACK);
+                    patientView.setTextColor(Color.BLACK);
                 }else{
                     patientView.setTextColor(Color.GRAY);
                 }
@@ -56,7 +56,7 @@ public class CustomAdapter extends ArrayAdapter<DataItem> {
             if (birthdayView != null){
                 birthdayView.setText(i.getBirthday());
                 if(i.canDecrypt()){
-//                    birthdayView.setTextColor(Color.BLACK);
+                    birthdayView.setTextColor(Color.BLACK);
                 }else{
                     birthdayView.setTextColor(Color.GRAY);
                 }

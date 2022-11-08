@@ -29,6 +29,7 @@ class GlobalInformation {
     public static String account;
     public static Integer caseOID;
     public static String privateKeyPath;
+    public static Toast toast;
 }
 
 public class LoginActivity extends AppCompatActivity {
@@ -91,10 +92,12 @@ public class LoginActivity extends AppCompatActivity {
                 Timber.d("App can authenticate using biometrics.");
                 break;
             case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
-                Toast.makeText(this, "FingerPrint sensor Not exist", Toast.LENGTH_SHORT).show();
+
+                ToastController.showToast(this,"FingerPrint sensor Not exist");
                 break;
             case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
-                Toast.makeText(this, "Sensor not avail or busy", Toast.LENGTH_SHORT).show();
+                ToastController.showToast(this,"Sensor not avail or busy");
+
                 break;
             case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
                 // Prompts the user to create credentials that your app accepts.
@@ -112,9 +115,9 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthenticationError(int errorCode,
                                               @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
-                Toast.makeText(getApplicationContext(),
-                        "Authentication error: " + errString, Toast.LENGTH_SHORT)
-                        .show();
+
+                ToastController.showToast(getApplicationContext(),"Authentication error: " + errString);
+
             }
 
             @Override
@@ -123,16 +126,15 @@ public class LoginActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
 //                startActivity(new Intent(LoginActivity.this, DataDecryptActivity.class));
                 startActivity(new Intent(LoginActivity.this, SelectActivity.class));
-                Toast.makeText(getApplicationContext(),
-                        "login success", Toast.LENGTH_SHORT).show();
+                ToastController.showToast(getApplicationContext(),"login success");
+
             }
 
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-                Toast.makeText(getApplicationContext(), "Authentication failed",
-                        Toast.LENGTH_SHORT)
-                        .show();
+                ToastController.showToast(getApplicationContext(),"Authentication failed");
+
             }
         });
 
@@ -185,14 +187,14 @@ public class LoginActivity extends AppCompatActivity {
 
             if(msg.what == 1)
             {
-                Toast.makeText(getApplicationContext(),"登入成功",
-                        Toast.LENGTH_LONG).show();
-                        sendUserToNextActivity();
+                ToastController.showToast(getApplicationContext(),"登入成功");
+                sendUserToNextActivity();
+
             }
             else
             {
-                Toast.makeText(getApplicationContext(),"登入失敗",
-                        Toast.LENGTH_LONG).show();
+                ToastController.showToast(getApplicationContext(),"登入失敗");
+
             }
         }
     };

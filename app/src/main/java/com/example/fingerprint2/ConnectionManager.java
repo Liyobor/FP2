@@ -50,12 +50,14 @@ public class ConnectionManager extends Thread{
                 String account;
                 String patient;
                 String birthday;
+                int signature;
 
                 caseOID = String.format("%s",rs.getString("caseOID"));
                 account = String.format("%s",rs.getString("account"));
                 filePath = String.format("%s",rs.getString("filePath"));
                 patient = String.format("姓名:%-16s",rs.getString("patient"));
                 birthday = String.format("生日:%-16s",rs.getString("birthday"));
+                signature = rs.getInt("signature");
 
                 String displayCaseStr = String.format("病歷%-8o",dataHandler.dataSelectDisplayList.size());
                 String fileName = filePath.substring(filePath.indexOf("file")+5,filePath.length()-4);
@@ -76,7 +78,7 @@ public class ConnectionManager extends Thread{
                 Timber.i("%s%s%s",displayCaseStr,patient,birthday);
 
 
-                if(!GlobalInformation.account.equals(account)){
+                if(!GlobalInformation.account.equals(account) || signature != 0){
                     dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,false));
                 }else{
                     dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,true));
@@ -86,6 +88,7 @@ public class ConnectionManager extends Thread{
                 Timber.i("dataHandler.info = %s",fileName);
                 Timber.i("dataHandler.caseOID = %s",dataHandler.caseOID);
                 Timber.i("dataHandler.account = %s",dataHandler.account);
+                Timber.i("signature = %s",signature);
 
 
 

@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,8 +41,10 @@ public class CreateActivity extends AppCompatActivity {
         String cpassword = et2.getText().toString();
 
         if (cusername.length() < 2 || cpassword.length() < 2) {
-            Toast.makeText(getApplicationContext(), "輸入資訊不符合要求請重新輸入",
-                    Toast.LENGTH_LONG).show();
+
+
+            ToastController.showToast(getApplicationContext(),"輸入資訊不符合要求請重新輸入");
+
             return;
 
         }
@@ -80,14 +81,13 @@ public class CreateActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             if(msg.what == 0)
             {
-                Toast.makeText(getApplicationContext(),
-                        "註冊失敗",Toast.LENGTH_LONG).show();
-
+                ToastController.showToast(getApplicationContext(),"註冊失敗");
             }
             if(msg.what == 1)
             {
-                Toast.makeText(getApplicationContext(),
-                        "帳號已存在",Toast.LENGTH_LONG).show();
+
+                ToastController.showToast(getApplicationContext(),"帳號已存在");
+
 
             }
             if(msg.what == 2)

@@ -7,7 +7,6 @@ import android.util.Base64;
 import android.util.Xml;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -294,7 +293,7 @@ public class DataDisplayActivity extends AppCompatActivity {
 
 
 
-//    fetch and send when invoking the function
+    //    fetch and send when invoking the function
     public void sign(){
 
         Thread thread2 = new Thread(mutiThread2);
@@ -477,7 +476,7 @@ public class DataDisplayActivity extends AppCompatActivity {
                     while ((responseLine = br.readLine()) != null) {
                         response.append(responseLine.trim());
                         Timber.i("response = %s",response);
-                        runOnUiThread(() -> Toast.makeText(DataDisplayActivity.this,response,Toast.LENGTH_LONG).show());
+                        runOnUiThread(() -> ToastController.showToast(DataDisplayActivity.this,String.format("%s",response)));
                     }
 //                    text2.setText(response);
                 }catch (Exception e) {
