@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.BuildConfig;
 
 import timber.log.Timber;
 
@@ -61,35 +60,21 @@ public class SelectActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (BuildConfig.DEBUG) {
-            Timber.uprootAll();
-            Timber.plant(new Timber.DebugTree());
-        }
+
+
+
+
+        Timber.i("onCreate");
 
 
 //        StrictMode.ThreadPolicy policy=new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
 
-        setContentView(R.layout.activity_select);
-        listViewRecordsList = findViewById(R.id.listViewRecordsList);
+
 //        listViewRecordsList.setBackgroundColor(Color.WHITE);
-
-        fab = findViewById(R.id.fab);
-
-
-        fab.setOnClickListener(v -> selectActivityForResult());
-
-
 
 
     }
@@ -101,14 +86,11 @@ public class SelectActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         Timber.i("onResume");
-        if(GlobalInformation.privateKeyPath==null){
-            fab.setImageResource(R.drawable.key1);
-        }else{
-            fab.setImageResource(R.drawable.key2);
-        }
+
 
         Thread pullRecord = new Thread(() ->{
             ConnectionManager.pullRecord(dataHandler);
+
             CustomAdapter adapter = new CustomAdapter(this,R.layout.row_listvew_decrypt, dataHandler.dataSelectDisplayList);
 
 //            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, info);
@@ -159,8 +141,7 @@ public class SelectActivity extends AppCompatActivity {
                                     bundle.putString("privateKeyPath",GlobalInformation.privateKeyPath);
                                     intent.putExtras(bundle);
                                     this.startActivity(intent);
-                                };
-
+                                }
 
 
 //                        this.startActivity(intent);
@@ -172,6 +153,23 @@ public class SelectActivity extends AppCompatActivity {
         );
         pullRecord.start();
         displayListOfRecords.start();
+
+        setContentView(R.layout.activity_select);
+        runOnUiThread(() -> {
+            listViewRecordsList = findViewById(R.id.listViewRecordsList);
+            fab = findViewById(R.id.fab);
+            fab.setOnClickListener(v -> selectActivityForResult());
+
+            if(GlobalInformation.privateKeyPath==null){
+                fab.setImageResource(R.drawable.key1);
+            }else{
+                fab.setImageResource(R.drawable.key2);
+            }
+        });
+
+
+
+
 
     }
 

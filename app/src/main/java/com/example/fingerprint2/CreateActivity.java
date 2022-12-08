@@ -4,15 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.firebase.auth.FirebaseAuth;
 
 public class CreateActivity extends AppCompatActivity {
 
@@ -22,7 +20,6 @@ public class CreateActivity extends AppCompatActivity {
     EditText et1,et2=null;
 
 
-    FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +49,17 @@ public class CreateActivity extends AppCompatActivity {
 
         User user = new User();
 
+        SharedPreferencesHelper preferencesHelper = new SharedPreferencesHelper(getApplicationContext());
+        KeyStoreHelper keyStoreHelper = new KeyStoreHelper(getApplicationContext(), preferencesHelper);
         user.setUsername(cusername);
+
+//        register with plaintext
         user.setPassword(cpassword);
+
+//        register with encrypted text
+//        user.setPassword(keyStoreHelper.encrypt(cpassword));
+
+
 
         new Thread(() -> {
 
@@ -75,34 +81,59 @@ public class CreateActivity extends AppCompatActivity {
 
         }).start();
     }
-    final Handler hand = new Handler()
-    {
-        @Override
-        public void handleMessage(Message msg) {
-            if(msg.what == 0)
-            {
-                ToastController.showToast(getApplicationContext(),"註冊失敗");
-            }
-            if(msg.what == 1)
-            {
+//    final Handler hand = new Handler()
+//    {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            if(msg.what == 0)
+//            {
+//                ToastController.showToast(getApplicationContext(),"註冊失敗");
+//            }
+//            if(msg.what == 1)
+//            {
+//
+//                ToastController.showToast(getApplicationContext(),"帳號已存在");
+//
+//
+//            }
+//            if(msg.what == 2)
+//            {
+//                //startActivity(new Intent(getApplication(),MainActivity.class));
+//
+//                Intent intent = new Intent();
+//                //將想要傳遞的資料用putExtra封裝在intent中
+//                intent.putExtra("a","註冊");
+//                setResult(RESULT_CANCELED,intent);
+//                finish();
+//            }
+//
+//        }
+//    };
 
-                ToastController.showToast(getApplicationContext(),"帳號已存在");
 
+    Handler hand = new Handler(Looper.getMainLooper(), message -> {
+        if(message.what == 0)
+        {
+            ToastController.showToast(getApplicationContext(),"註冊失敗");
+        }
+        if(message.what == 1)
+        {
 
-            }
-            if(msg.what == 2)
-            {
-                //startActivity(new Intent(getApplication(),MainActivity.class));
+            ToastController.showToast(getApplicationContext(),"帳號已存在");
 
-                Intent intent = new Intent();
-                //將想要傳遞的資料用putExtra封裝在intent中
-                intent.putExtra("a","註冊");
-                setResult(RESULT_CANCELED,intent);
-                finish();
-            }
 
         }
-    };
+        if(message.what == 2)
+        {
+            //startActivity(new Intent(getApplication(),MainActivity.class));
+            Intent intent = new Intent();
+            //將想要傳遞的資料用putExtra封裝在intent中
+            intent.putExtra("a","註冊");
+            setResult(RESULT_CANCELED,intent);
+            finish();
+        }
+        return true;
+    });
 
     public void backlogin(View view) {
         Intent intent = new Intent(CreateActivity.this,LoginActivity.class);

@@ -62,11 +62,8 @@ public class ConnectionManager extends Thread{
                 String displayCaseStr = String.format("病歷%-8o",dataHandler.dataSelectDisplayList.size());
                 String fileName = filePath.substring(filePath.indexOf("file")+5,filePath.length()-4);
 
-                dataHandler.info.add((fileName));
-                dataHandler.caseOID = Integer.parseInt(caseOID);
-                dataHandler.account = account;
-                dataHandler.caseOIDList.add(dataHandler.caseOID);
-                dataHandler.accountList.add(dataHandler.account);
+
+
 
 
 //                String displayString = String.format("病歷:"+dataHandler.displayList.size()+","+tab+"姓名 : "+patient,","+tab);
@@ -78,10 +75,27 @@ public class ConnectionManager extends Thread{
                 Timber.i("%s%s%s",displayCaseStr,patient,birthday);
 
 
-                if(!GlobalInformation.account.equals(account) || signature != 0){
-                    dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,false));
-                }else{
-                    dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,true));
+//                String testStr1 = String.format("local account = %s",GlobalInformation.account);
+//                String testStr2 = String.format("account from sql= %s",account);
+//                dataHandler.dataSelectDisplayList.add(new DataItem("test",testStr1,testStr2,false));
+
+
+
+
+                if(GlobalInformation.account.equals(account)){
+
+
+                    if(signature != 0){
+                        dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,false));
+                    }else{
+                        dataHandler.dataSelectDisplayList.add(new DataItem(displayCaseStr,patient,birthday,true));
+                    }
+                    dataHandler.info.add((fileName));
+                    dataHandler.caseOID = Integer.parseInt(caseOID);
+                    dataHandler.account = account;
+                    dataHandler.caseOIDList.add(dataHandler.caseOID);
+                    dataHandler.accountList.add(dataHandler.account);
+
                 }
 
                 Timber.i("dataHandler changed!");

@@ -5,11 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDao {
-    public boolean login(String username, String password) {
+import timber.log.Timber;
 
-//        String sql = "select * from ra.member where account = ? and password = ?";
-        String sql = "select * from app.account_info where account = ? and password = ?";
+public class UserDao {
+    public String login(String username, String password) {
+
+//        String sql = "select * from app.account_info where account = ? and password = ?";
+        String sql = "select * from app.account_info where account = ?";
+//        String sql =  "select * from app.account_info WHERE ACCOUNT = CAST(? AS BINARY) AND PASSWORD = CAST(? AS BINARY)";
+
 
         Connection con = JDBCUtils.getConn();
 
@@ -17,21 +21,31 @@ public class UserDao {
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setString(1, username);
-            pst.setString(2, password);
+//            pst.setString(2, password);
 
-            if (pst.executeQuery().next()) {
-                GlobalInformation.account = username;
-                return true;
+            ResultSet rs = pst.executeQuery();
+
+
+            if (rs.next()) {
+                GlobalInformation.account = rs.getString("account");
+
+//                GlobalInformation.account = username;
+                Timber.i("GlobalInformation.account = %s",GlobalInformation.account);
+//                return true;
+                return rs.getString("password");
+
 
             }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         } finally {
-            JDBCUtils.close(con);
+            if(con!=null){
+                JDBCUtils.close(con);
+            }
         }
 
-        return false;
+        return "";
     }
     public boolean register(User user){
 
